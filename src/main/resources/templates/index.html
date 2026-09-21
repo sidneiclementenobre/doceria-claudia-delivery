@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doceria Delivery - Bolos, Doces e Salgados</title>
+
+    <style>
+      body {
+        background-color: #fcf8f2;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .navbar {
+        background-color: #ffb3c6;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .navbar-brand {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+      .products-column {
+        flex: 2;
+        min-width: 300px;
+      }
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+      }
+      .card-product {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s;
+      }
+      .card-product:hover {
+        transform: translateY(-5px);
+      }
+      .card-product img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+      .card-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+      .badge-category {
+        background-color: #ff85a2;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        align-self: flex-start;
+        margin-bottom: 10px;
+      }
+      .card-title {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+      }
+      .card-text {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 15px;
+        flex-grow: 1;
+      }
+      .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #2ecc71;
+      }
+      .btn-custom {
+        background-color: #ff85a2;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .btn-custom:hover {
+        background-color: #f15c80;
+      }
+      .cart-column {
+        flex: 1;
+        min-width: 300px;
+      }
+      .cart-container {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px;
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .cart-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .btn-success {
+        background-color: #2ecc71;
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn-success:hover {
+        background-color: #27ae60;
+      }
+      .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a class="navbar-brand" href="#">🧁 Doceria Claudia Nobre Delivery</a>
+    </nav>
+
+    <div class="container">
+      <!-- Vitrine de Produtos (Lado Esquerdo) -->
+      <div class="products-column">
+        <h2 style="color: #555">Nosso Cardápio</h2>
+        <div class="products-grid">
+          <div class="card-product" th:each="product : ${products}">
+            <img th:src="${product.imageUrl}" alt="Produto" />
+            <div class="card-body">
+              <span class="badge-category" th:text="${product.category}"
+                >CATEGORIA</span
+              >
+              <h5 class="card-title" th:text="${product.name}">Nome</h5>
+              <p class="card-text" th:text="${product.description}">
+                Descrição
+              </p>
+              <div class="product-footer">
+                <span
+                  class="price"
+                  th:text="'R$ ' + ${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')}"
+                  >R$ 0,00</span
+                >
+                <button
+                  class="btn-custom"
+                  th:data-id="${product.id}"
+                  th:data-name="${product.name}"
+                  th:data-price="${product.price}"
+                  onclick="addToCart(this.getAttribute('data-id'),this.getAttribute('data-name'),this.getAttribute('data-price'))"
+                >
+                  Adicionar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carrinho de Compras Interativo (Lado Direito) -->
+      <div class="cart-column">
+        <div class="cart-container">
+          <h3>Meu Carrinho (<span id="cart-count">0</span>)</h3>
+          <div id="cart-items">
+            <p style="text-align: center; color: #999" id="empty-cart-msg">
+              Seu carrinho está vazio.
+            </p>
+          </div>
+          <hr />
+          <h4
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin: 15px 0;
+            "
+          >
+            Total: <span id="cart-total" style="color: #2ecc71">R$ 0,00</span>
+          </h4>
+
+          <form id="checkout-form">
+            <div class="form-group">
+              <label>Seu Nome:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="client-name"
+                required
+                placeholder="Ex: Maria Silva"
+              />
+            </div>
+            <div class="form-group">
+              <label>Endereço de Entrega:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="client-address"
+                required
+                placeholder="Rua, Número, Bairro"
+              />
+            </div>
+            <div class="form-group">
+              <label>Forma de Pagamento:</label>
+              <select class="form-control" id="payment-method" required>
+                <option value="Pix">Pix</option>
+                <option value="Cartão">Cartão (na entrega)</option>
+                <option value="Dinheiro">Dinheiro</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-success">
+              Enviar Pedido via WhatsApp
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let cart = [];
+      const whatsappNumber = "5511985679174"; //Substitua pelo seu número real com DDD (Apenas números)
+
+      function addToCart(id, name, price) {
+        // Converte o preço substituindo vírgula por ponto para o JavaScript entender
+        let cleanPrice = parseFloat(String(price).replace(",", "."));
+
+        const existingItem = cart.find((item) => item.id == id);
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({ id: id, name: name, price: cleanPrice, quantity: 1 });
+        }
+        updateCartUI();
+      }
+
+      function removeFromCart(id) {
+        cart = cart.filter((item) => item.id != id);
+        updateCartUI();
+      }
+
+      function updateCartUI() {
+        const cartItemsContainer = document.getElementById("cart-items");
+        const cartCount = document.getElementById("cart-count");
+        const cartTotal = document.getElementById("cart-total");
+
+        cartItemsContainer.innerHTML = "";
+
+        if (cart.length === 0) {
+          cartItemsContainer.innerHTML =
+            '<p style="text-align: center; color: #999;" id="empty-cart-msg">Seu carrinho está vazio.</p>';
+          cartCount.innerText = "0";
+          cartTotal.innerText = "R\$ 0,00";
+          return;
+        }
+
+        let total = 0;
+        let totalItems = 0;
+
+        cart.forEach((item) => {
+          total += item.price * item.quantity;
+          totalItems += item.quantity;
+
+          const itemRow = document.createElement("div");
+          itemRow.className = "cart-item-row";
+          itemRow.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; width: 100%;">
+                    <div>
+                        <strong style="font-size:14px;">${
+                          item.name
+                        }</strong><br>
+                        <small style="color:#777;">${
+                          item.quantity
+                        }x R$ ${item.price.toFixed(2)}</small>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-weight:bold; color:#2ecc71;">R$ ${(
+                          item.price * item.quantity
+                        ).toFixed(2)}</span>
+                        <button class="btn-delete" style="background-color: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;" onclick="removeFromCart(${
+                          item.id
+                        })">X</button>
+                    </div>
+                </div>
+            `;
+          cartItemsContainer.appendChild(itemRow);
+        });
+
+        cartCount.innerText = totalItems;
+        cartTotal.innerText = `R$ ${total.toFixed(2)}`;
+      }
+
+      // Vincula o evento ao formulário assim que a página carregar
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("checkout-form");
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            e.preventDefault(); // Evita que a página recarregue
+
+            if (cart.length === 0) {
+              alert(
+                "Seu carrinho está vazio! Adicione produtos antes de enviar."
+              );
+              return;
+            }
+
+            var name = document.getElementById("client-name").value;
+            var address = document.getElementById("client-address").value;
+            var payment = document.getElementById("payment-method").value;
+
+            // Monta o texto usando aspas normais para o Thymeleaf não bugar
+            var message =
+              "*🧁 PEDIDO - DOCERIA CLAUDIA NOBRE DELIVERY*\n\n" +
+              "*Cliente:* " +
+              name +
+              "\n" +
+              "*Endereço:* " +
+              address +
+              "\n" +
+              "*Pagamento:* " +
+              payment +
+              "\n\n" +
+              "*Produtos:*\n";
+
+            var total = 0;
+            cart.forEach(function (item) {
+              total += item.price * item.quantity;
+              message +=
+                "- " +
+                item.quantity +
+                "x " +
+                item.name +
+                " (R$ " +
+                (item.price * item.quantity).toFixed(2) +
+                ")\n";
+            });
+
+            message += "\n*Total Geral: R$ " + total.toFixed(2) + "*";
+
+            var url =
+              "https://wa.me/" +
+              whatsappNumber +
+              "?text=" +
+              encodeURIComponent(message);
+            window.open(url, "_blank");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
